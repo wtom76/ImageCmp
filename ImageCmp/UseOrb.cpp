@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "UseOrb.h"
-#include <opencv2\stitching\detail\matchers.hpp>
-#include <opencv2\imgcodecs.hpp>
-#include <opencv2\highgui.hpp>
+#include <opencv2/stitching/detail/matchers.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 
 using namespace cv;
 
-const char* g_filenames[] =
+static const char* g_filenames[] =
 {
 	R"(..\img\larger1.jpg)",
 	R"(..\img\larger2.jpg)",
@@ -41,10 +41,7 @@ void UseOrb::run()
 		}
 
 		constexpr int wta_k = 2;
-		//Ptr<Feature2D> extractor = ORB::create(500, 1.2f, 8, 31, 0, wta_k);
-		Ptr<AKAZE> extractor = AKAZE::create();
-		extractor->setThreshold(0.001);
-		//extractor->setDescriptorType(AKAZE::DESCRIPTOR_KAZE);
+		Ptr<Feature2D> extractor = ORB::create(500, 1.2f, 8, 31, 0, wta_k);
 		std::vector<std::vector<KeyPoint>> kpoints(count);
 		std::vector<Mat> descr(count);
 		for (int i = 0; i < count; ++i)

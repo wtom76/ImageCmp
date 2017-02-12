@@ -10,7 +10,7 @@ using namespace std;
 using namespace cv;
 
 static const float inlier_threshold = 2.5f; // Distance threshold to identify inliers
-static const float nn_match_ratio = 1.0f;   // 0.8 Nearest neighbor matching ratio
+static const float nn_match_ratio = 0.8f;   // 0.8 Nearest neighbor matching ratio
 
 UzeAkaze::UzeAkaze()
 {
