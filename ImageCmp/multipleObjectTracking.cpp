@@ -355,7 +355,7 @@ namespace ObjectTracking
 	void runImage()
 	{
 		//Matrix to store each frame of the webcam feed
-		Mat cameraFeed = imread(R"(.\img\larger1.jpg)", IMREAD_UNCHANGED);;
+		Mat cameraFeed = imread(R"(.\img\larger1.jpg)", IMREAD_UNCHANGED);
 		Mat threshold;
 		Mat HSV;
 

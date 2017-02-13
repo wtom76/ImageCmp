@@ -13,12 +13,13 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "Object.h"
+#include "UseMoments.h"
 
 int main()
 {
 	try
 	{
-		ObjectTracking::runImage();
+		UseMoments().run();
 	}
 	catch (cv::Exception& ex)
 	{
