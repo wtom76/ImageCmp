@@ -47,4 +47,5 @@ namespace ObjectTracking
 	};
 
 	int run();
+	void runImage();
 }

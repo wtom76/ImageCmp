@@ -18,7 +18,7 @@ int main()
 {
 	try
 	{
-		ObjectTracking::run();
+		ObjectTracking::runImage();
 	}
 	catch (cv::Exception& ex)
 	{

@@ -27,12 +27,12 @@ namespace ObjectTracking
 
 	//initial min and max HSV filter values.
 	//these will be changed using trackbars
-	int H_MIN = 0;
-	int H_MAX = 256;
-	int S_MIN = 0;
-	int S_MAX = 256;
-	int V_MIN = 0;
-	int V_MAX = 256;
+	int H_MIN = 150;
+	int H_MAX = 1000;//256;
+	int S_MIN = 150;
+	int S_MAX = 1000;
+	int V_MIN = 150;
+	int V_MAX = 1000;
 	//default capture width and height
 	const int FRAME_WIDTH = 640;
 	const int FRAME_HEIGHT = 480;
@@ -155,14 +155,23 @@ namespace ObjectTracking
 					//if the area is the same as the 3/2 of the image size, probably just a bad filter
 					//we only want the object with the largest area so we safe a reference area each
 					//iteration and compare it to the area in the next iteration.
-					if (area > MIN_OBJECT_AREA)
+					if (area > refArea)
 					{
+						refArea = area;
+
 						Object object;
 
 						object.setXPos(moment.m10 / area);
 						object.setYPos(moment.m01 / area);
 
-						objects.push_back(object);
+						if (objects.empty())
+						{
+							objects.push_back(object);
+						}
+						else
+						{
+							objects.front() = object;
+						}
 
 						objectFound = true;
 
@@ -196,7 +205,8 @@ namespace ObjectTracking
 		if (hierarchy.size() > 0) {
 			int numObjects = hierarchy.size();
 			//if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
-			if (numObjects < MAX_NUM_OBJECTS) {
+			//if (numObjects < MAX_NUM_OBJECTS)
+			{
 				for (int index = 0; index >= 0; index = hierarchy[index][0]) {
 
 					Moments moment = moments((cv::Mat)contours[index]);
@@ -206,7 +216,8 @@ namespace ObjectTracking
 					//if the area is the same as the 3/2 of the image size, probably just a bad filter
 					//we only want the object with the largest area so we safe a reference area each
 							//iteration and compare it to the area in the next iteration.
-					if (area > MIN_OBJECT_AREA) {
+					if (area > refArea) {
+						refArea = area;
 
 						Object object;
 
@@ -215,7 +226,14 @@ namespace ObjectTracking
 						object.setType(theObject.getType());
 						object.setColor(theObject.getColor());
 
-						objects.push_back(object);
+						if (objects.empty())
+						{
+							objects.push_back(object);
+						}
+						else
+						{
+							objects.front() = object;
+						}
 
 						objectFound = true;
 
@@ -229,7 +247,7 @@ namespace ObjectTracking
 				}
 
 			}
-			else putText(cameraFeed, "TOO MUCH NOISE! ADJUST FILTER", Point(0, 50), 1, 2, Scalar(0, 0, 255), 2);
+			//else putText(cameraFeed, "TOO MUCH NOISE! ADJUST FILTER", Point(0, 50), 1, 2, Scalar(0, 0, 255), 2);
 		}
 	}
 
@@ -334,4 +352,57 @@ namespace ObjectTracking
 		return 0;
 	}
 
+	void runImage()
+	{
+		//Matrix to store each frame of the webcam feed
+		Mat cameraFeed = imread(R"(.\img\larger1.jpg)", IMREAD_UNCHANGED);;
+		Mat threshold;
+		Mat HSV;
+
+		src = cameraFeed;
+
+		if (!src.data)
+		{
+			std::cout << "Image isn't loaded" << std::endl;
+			return;
+		}
+
+		//convert frame from BGR to HSV colorspace
+		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
+
+		//create some temp fruit objects so that
+		//we can use their member functions/information
+		Object blue("blue"), yellow("yellow"), red("red"), green("green");
+
+		//first find blue objects
+		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
+		inRange(HSV, blue.getHSVmin(), blue.getHSVmax(), threshold);
+		morphOps(threshold);
+		trackFilteredObject(blue, threshold, HSV, cameraFeed);
+		//then yellows
+		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
+		inRange(HSV, yellow.getHSVmin(), yellow.getHSVmax(), threshold);
+		morphOps(threshold);
+		trackFilteredObject(yellow, threshold, HSV, cameraFeed);
+		//then reds
+		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
+		inRange(HSV, red.getHSVmin(), red.getHSVmax(), threshold);
+		morphOps(threshold);
+		trackFilteredObject(red, threshold, HSV, cameraFeed);
+		//then greens
+		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
+		inRange(HSV, green.getHSVmin(), green.getHSVmax(), threshold);
+		morphOps(threshold);
+		trackFilteredObject(green, threshold, HSV, cameraFeed);
+
+		//show frames
+		//imshow(windowName2,threshold);
+
+		imshow(windowName, cameraFeed);
+		//imshow(windowName1,HSV);
+
+		//delay 30ms so that screen can refresh.
+		//image will not appear without this waitKey() command
+		waitKey();
+	}
 }
