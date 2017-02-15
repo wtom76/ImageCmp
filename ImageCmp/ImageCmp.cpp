@@ -6,6 +6,11 @@
 // https://www.learnopencv.com/image-recognition-and-object-detection-part1/
 // http://akaifi.github.io/MultiObjectTrackingBasedOnColor/
 
+// Scalable near identical image and shot detection
+// O.Chum, J.Philbin, M.Isard, A.Zisserman, CIVR 2007
+
+// http://docs.opencv.org/2.4/modules/imgproc/doc/histograms.html
+
 #include "stdafx.h"
 #include "UseOrb.h"
 #include "UzeAkaze.h"
@@ -14,12 +19,13 @@
 #include <opencv2/opencv.hpp>
 #include "Object.h"
 #include "UseMoments.h"
+#include "UseHist.h"
 
 int main()
 {
 	try
 	{
-		UseMoments().run();
+		UseHist().run();
 	}
 	catch (cv::Exception& ex)
 	{
