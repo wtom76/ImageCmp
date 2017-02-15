@@ -83,27 +83,36 @@ void thresh_callback(int, void*)
 		mc[i] = Point2f(mu[i].m10 / mu[i].m00, mu[i].m01 / mu[i].m00);
 	}
 
+	vector<Point2i> mci(contours.size());
+	for (int i = 0; i < contours.size(); i++)
+	{
+		mci[i] = Point2i(mu[i].m10 / mu[i].m00, mu[i].m01 / mu[i].m00);
+	}
+
 
 	/// Draw contours
 	Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
-	for (int i = 0; i< contours.size(); i++)
-	{
-		Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-		drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
-		circle(drawing, mc[i], 4, color, -1, 8, 0);
-	}
+
+	polylines(drawing, mci, false, 128);
+
+	//for (int i = 0; i< contours.size(); i++)
+	//{
+	//	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+	//	drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
+	//	circle(drawing, mc[i], 4, color, -1, 8, 0);
+	//}
 
 	/// Show in a window
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
 	imshow("Contours", drawing);
 
 	/// Calculate the area with the moments 00 and compare with the result of the OpenCV function
-	printf("\t Info: Area and Contour Length \n");
-	for (int i = 0; i< contours.size(); i++)
-	{
-		printf(" * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f \n", i, mu[i].m00, contourArea(contours[i]), arcLength(contours[i], true));
-		Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-		drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
-		circle(drawing, mc[i], 4, color, -1, 8, 0);
-	}
+	//printf("\t Info: Area and Contour Length \n");
+	//for (int i = 0; i< contours.size(); i++)
+	//{
+	//	printf(" * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f \n", i, mu[i].m00, contourArea(contours[i]), arcLength(contours[i], true));
+	//	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+	//	drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
+	//	circle(drawing, mc[i], 4, color, -1, 8, 0);
+	//}
 }
