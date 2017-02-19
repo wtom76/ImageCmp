@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UseHist.h"
+#include "ResultAnalyse.h"
 #include <iostream>
 #include <string>
 #include <opencv2\highgui.hpp>
@@ -14,16 +15,10 @@ static const char* g_filenames[] =
 	R"(.\img\larger3.jpg)",
 	R"(.\img\larger4.jpg)",
 	R"(.\img\larger5.png)",
-	R"(.\img\larger6.jpg)"
+	R"(.\img\larger6.jpg)",
+	R"(.\img\graf1.png)",
+	R"(.\img\graf3.png)"
 };
-
-UseHist::UseHist()
-{
-}
-
-UseHist::~UseHist()
-{
-}
 
 void UseHist::run()
 {
@@ -34,14 +29,36 @@ void UseHist::run()
 		_createHist(i, histograms[i]);
 	}
 
-	for (int i = 0; i < count - 1; ++i)
+	for (int i = 0; i < count; ++i)
 	{
 		for (int j = i; j < count; ++j)
 		{
-			const double cmprd = compareHist(histograms[i], histograms[j], CV_COMP_CORREL);
-			std::wcout << i << L' ' << j << L' ' << cmprd << std::endl;
+			const double cmprd = compareHist(histograms[i], histograms[j], compare_method_);
+			std::wcout << i << L'\t' << j << L'\t' << cmprd << std::endl;
 		}
 	}
+}
+
+std::vector<AlgDev::Result> UseHist::runResult()
+{
+	constexpr int count = sizeof(g_filenames) / sizeof(g_filenames[0]);
+	std::vector<AlgDev::Result> result;
+	result.reserve((count + 1) * count / 2);
+	std::vector<Mat> histograms(count);
+	for (int i = 0; i < count; ++i)
+	{
+		_createHist(i, histograms[i]);
+	}
+
+	for (int i = 0; i < count; ++i)
+	{
+		for (int j = i; j < count; ++j)
+		{
+			const double cmprd = compareHist(histograms[i], histograms[j], compare_method_);
+			result.push_back(AlgDev::Result(std::pair<int, int>(i, j), cmprd));
+		}
+	}
+	return result;
 }
 
 void UseHist::_createHist(int img_index, Mat& hist) const
@@ -86,12 +103,28 @@ void UseHist::_createHist(int img_index, Mat& hist) const
 				CV_FILLED);
 		}
 
-	//imwrite(std::to_string(img_index) + "_hist.png", histImg);
+	imwrite(std::string(".\\hist\\") + std::to_string(img_index) + "_hist.png", histImg);
 
-	namedWindow("Source", 1);
-	imshow("Source", src);
+	//namedWindow("Source", 1);
+	//imshow("Source", src);
 
-	namedWindow("H-S Histogram", 1);
-	imshow("H-S Histogram", histImg);
-	waitKey();
+	//namedWindow("H-S Histogram", 1);
+	//imshow("H-S Histogram", histImg);
+	//waitKey();
+}
+
+void UseHist::testMethod()
+{
+	std::wcout << std::endl << L"CV_COMP_CORREL" << std::endl;
+	AlgDev::Analyse(UseHist(CV_COMP_CORREL).runResult());
+	std::wcout << std::endl << L"CV_COMP_CHISQR" << std::endl;
+	AlgDev::Analyse(UseHist(CV_COMP_CHISQR).runResult());
+	std::wcout << std::endl << L"CV_COMP_INTERSECT" << std::endl;
+	AlgDev::Analyse(UseHist(CV_COMP_INTERSECT).runResult());
+	std::wcout << std::endl << L"CV_COMP_BHATTACHARYYA = CV_COMP_HELLINGER" << std::endl;
+	AlgDev::Analyse(UseHist(CV_COMP_BHATTACHARYYA).runResult());
+	std::wcout << std::endl << L"CV_COMP_CHISQR_ALT" << std::endl;
+	AlgDev::Analyse(UseHist(CV_COMP_CHISQR_ALT).runResult());
+	std::wcout << std::endl << L"CV_COMP_KL_DIV" << std::endl;
+	AlgDev::Analyse(UseHist(CV_COMP_KL_DIV).runResult());
 }

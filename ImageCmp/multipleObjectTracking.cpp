@@ -95,8 +95,8 @@ namespace ObjectTracking
 		createTrackbar("V_MAX", trackbarWindowName, &V_MAX, V_MAX, on_trackbar);
 	}
 
-	void drawObject(vector<Object> theObjects, Mat &frame, Mat &temp, vector< vector<Point> > contours, vector<Vec4i> hierarchy) {
-
+	void drawObject(vector<Object> theObjects, Mat &frame, Mat &temp, vector< vector<Point> > contours, vector<Vec4i> hierarchy)
+	{
 		for (int i = 0; i < theObjects.size(); i++) {
 			cv::drawContours(frame, contours, i, theObjects.at(i).getColor(), 3, 8, hierarchy);
 			cv::circle(frame, cv::Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()), 5, theObjects.at(i).getColor());
@@ -129,6 +129,7 @@ namespace ObjectTracking
 		dilate(thresh, thresh, dilateElement);
 		dilate(thresh, thresh, dilateElement);
 	}
+
 	void trackFilteredObject(Mat threshold, Mat HSV, Mat &cameraFeed)
 	{
 		vector <Object> objects;
@@ -189,9 +190,9 @@ namespace ObjectTracking
 		}
 	}
 
-	void trackFilteredObject(Object theObject, Mat threshold, Mat HSV, Mat &cameraFeed) {
-
-		vector <Object> objects;
+	void trackFilteredObject(Object theObject, Mat threshold, Mat HSV, Mat &cameraFeed)
+	{
+		vector<Object> objects;
 		Mat temp;
 		threshold.copyTo(temp);
 		//these two vectors needed for output of findContours
@@ -201,51 +202,43 @@ namespace ObjectTracking
 		findContours(temp, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
 		//use moments method to find our filtered object
 		double refArea = 0;
-		bool objectFound = false;
-		if (hierarchy.size() > 0) {
+		if (hierarchy.size() > 0)
+		{
 			int numObjects = hierarchy.size();
 			//if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
-			//if (numObjects < MAX_NUM_OBJECTS)
+			for (int index = 0; index >= 0; index = hierarchy[index][0])
 			{
-				for (int index = 0; index >= 0; index = hierarchy[index][0]) {
+				Moments moment = moments((cv::Mat)contours[index]);
+				double area = moment.m00;
 
-					Moments moment = moments((cv::Mat)contours[index]);
-					double area = moment.m00;
+				//if the area is less than 20 px by 20px then it is probably just noise
+				//if the area is the same as the 3/2 of the image size, probably just a bad filter
+				//we only want the object with the largest area so we safe a reference area each
+						//iteration and compare it to the area in the next iteration.
+				if (area > MIN_OBJECT_AREA)
+				{
+					refArea = area;
 
-					//if the area is less than 20 px by 20px then it is probably just noise
-					//if the area is the same as the 3/2 of the image size, probably just a bad filter
-					//we only want the object with the largest area so we safe a reference area each
-							//iteration and compare it to the area in the next iteration.
-					if (area > refArea) {
-						refArea = area;
-
-						Object object;
-
-						object.setXPos(moment.m10 / area);
-						object.setYPos(moment.m01 / area);
-						object.setType(theObject.getType());
-						object.setColor(theObject.getColor());
-
-						if (objects.empty())
-						{
-							objects.push_back(object);
-						}
-						else
-						{
-							objects.front() = object;
-						}
-
-						objectFound = true;
-
-					}
-					else objectFound = false;
+					Object object;
+					object.setXPos(moment.m10 / area);
+					object.setYPos(moment.m01 / area);
+					object.setType(theObject.getType());
+					object.setColor(theObject.getColor());
+					objects.push_back(object);
+					//if (objects.empty())
+					//{
+					//	objects.push_back(object);
+					//}
+					//else
+					//{
+					//	objects.front() = object;
+					//}
 				}
-				//let user know you found an object
-				if (objectFound == true) {
-					//draw object location on screen
-					drawObject(objects, cameraFeed, temp, contours, hierarchy);
-				}
-
+			}
+			//let user know you found an object
+			if (!objects.empty()) {
+				//draw object location on screen
+				drawObject(objects, cameraFeed, temp, contours, hierarchy);
 			}
 			//else putText(cameraFeed, "TOO MUCH NOISE! ADJUST FILTER", Point(0, 50), 1, 2, Scalar(0, 0, 255), 2);
 		}
@@ -396,7 +389,7 @@ namespace ObjectTracking
 		trackFilteredObject(green, threshold, HSV, cameraFeed);
 
 		//show frames
-		//imshow(windowName2,threshold);
+		imshow(windowName2,threshold);
 
 		imshow(windowName, cameraFeed);
 		//imshow(windowName1,HSV);

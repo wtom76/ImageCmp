@@ -93,14 +93,17 @@ void thresh_callback(int, void*)
 	/// Draw contours
 	Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
 
-	polylines(drawing, mci, false, 128);
-
-	//for (int i = 0; i< contours.size(); i++)
+	//for (auto& pnt : mci)
 	//{
-	//	Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-	//	drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
-	//	circle(drawing, mc[i], 4, color, -1, 8, 0);
+	//	drawMarker(drawing, pnt, Scalar(0, 255, 255), MARKER_STAR);
 	//}
+
+	for (int i = 0; i< contours.size(); i++)
+	{
+		Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+		drawContours(drawing, contours, i, color, 1, 8, hierarchy, 0, Point());
+		circle(drawing, mc[i], 4, color, -1, 8, 0);
+	}
 
 	/// Show in a window
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
@@ -115,4 +118,5 @@ void thresh_callback(int, void*)
 	//	drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
 	//	circle(drawing, mc[i], 4, color, -1, 8, 0);
 	//}
+	waitKey();
 }

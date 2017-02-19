@@ -12,11 +12,10 @@
 // http://docs.opencv.org/2.4/modules/imgproc/doc/histograms.html
 
 #include "stdafx.h"
+#include <iostream>
 #include "UseOrb.h"
 #include "UzeAkaze.h"
 #include "UseFast.h"
-#include <iostream>
-#include <opencv2/opencv.hpp>
 #include "Object.h"
 #include "UseMoments.h"
 #include "UseHist.h"
@@ -25,7 +24,7 @@ int main()
 {
 	try
 	{
-		UseHist().run();
+		ObjectTracking::runImage();
 	}
 	catch (cv::Exception& ex)
 	{
