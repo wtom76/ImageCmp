@@ -8,7 +8,7 @@
 namespace ObjectTracking
 {
 
-	Object::Object()
+	Object::Object() : xPos(0), yPos(0), area_(0)
 	{
 		//set values for default constructor
 		setType("Object");

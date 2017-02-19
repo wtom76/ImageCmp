@@ -28,19 +28,19 @@ namespace ObjectTracking
 	//initial min and max HSV filter values.
 	//these will be changed using trackbars
 	int H_MIN = 150;
-	int H_MAX = 1000;//256;
+	int H_MAX = 1000000;//256;
 	int S_MIN = 150;
-	int S_MAX = 1000;
+	int S_MAX = 1000000;
 	int V_MIN = 150;
-	int V_MAX = 1000;
+	int V_MAX = 1000000;
 	//default capture width and height
 	const int FRAME_WIDTH = 640;
 	const int FRAME_HEIGHT = 480;
 	//max number of objects to be detected in frame
 	const int MAX_NUM_OBJECTS = 50;
 	//minimum and maximum object area
-	const int MIN_OBJECT_AREA = 20 * 20;
-	const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH / 1.5;
+	const int MIN_OBJECT_AREA = 10000; // 20 * 20;
+	const int MAX_OBJECT_AREA = static_cast<int>(FRAME_HEIGHT * FRAME_WIDTH / 1.5);
 	//names that will appear at the top of each window
 	const string windowName = "Original Image";
 	const string windowName1 = "HSV Image";
@@ -95,13 +95,17 @@ namespace ObjectTracking
 		createTrackbar("V_MAX", trackbarWindowName, &V_MAX, V_MAX, on_trackbar);
 	}
 
-	void drawObject(vector<Object> theObjects, Mat &frame, Mat &temp, vector< vector<Point> > contours, vector<Vec4i> hierarchy)
+	void drawObject(vector<Object> objects, Mat &frame, Mat &temp, vector< vector<Point> > contours, vector<Vec4i> hierarchy)
 	{
-		for (int i = 0; i < theObjects.size(); i++) {
-			cv::drawContours(frame, contours, i, theObjects.at(i).getColor(), 3, 8, hierarchy);
-			cv::circle(frame, cv::Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()), 5, theObjects.at(i).getColor());
-			cv::putText(frame, intToString(theObjects.at(i).getXPos()) + " , " + intToString(theObjects.at(i).getYPos()), cv::Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos() + 20), 1, 1, theObjects.at(i).getColor());
-			cv::putText(frame, theObjects.at(i).getType(), cv::Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos() - 20), 1, 2, theObjects.at(i).getColor());
+		int i = 0;
+		for (Object& object : objects)
+		{
+			cv::drawContours(frame, contours, i, object.getColor(), 1, 8, hierarchy);
+			cv::circle(frame, cv::Point(object.getXPos(), object.getYPos()), 5, object.getColor());
+			cv::putText(frame, to_string(object.area()), cv::Point(object.getXPos(), object.getYPos() + 20), 1, 1, object.getColor(), 2);
+			//cv::putText(frame, intToString(object.getXPos()) + ", " + intToString(object.getYPos()), cv::Point(object.getXPos(), object.getYPos() + 20), 1, 1, object.getColor());
+//			cv::putText(frame, object.getType(), cv::Point(object.getXPos(), object.getYPos() - 20), 1, 2, object.getColor());
+			++i;
 		}
 	}
 
@@ -132,7 +136,7 @@ namespace ObjectTracking
 
 	void trackFilteredObject(Mat threshold, Mat HSV, Mat &cameraFeed)
 	{
-		vector <Object> objects;
+		vector<Object> objects;
 		Mat temp;
 		threshold.copyTo(temp);
 		//these two vectors needed for output of findContours
@@ -162,8 +166,8 @@ namespace ObjectTracking
 
 						Object object;
 
-						object.setXPos(moment.m10 / area);
-						object.setYPos(moment.m01 / area);
+						object.setXPos(static_cast<int>(moment.m10 / area));
+						object.setYPos(static_cast<int>(moment.m01 / area));
 
 						if (objects.empty())
 						{
@@ -220,8 +224,9 @@ namespace ObjectTracking
 					refArea = area;
 
 					Object object;
-					object.setXPos(moment.m10 / area);
-					object.setYPos(moment.m01 / area);
+					object.setArea(static_cast<int>(area));
+					object.setXPos(static_cast<int>(moment.m10 / area));
+					object.setYPos(static_cast<int>(moment.m01 / area));
 					object.setType(theObject.getType());
 					object.setColor(theObject.getColor());
 					objects.push_back(object);
@@ -389,7 +394,7 @@ namespace ObjectTracking
 		trackFilteredObject(green, threshold, HSV, cameraFeed);
 
 		//show frames
-		imshow(windowName2,threshold);
+		//imshow(windowName2,threshold);
 
 		imshow(windowName, cameraFeed);
 		//imshow(windowName1,HSV);

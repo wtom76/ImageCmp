@@ -21,6 +21,9 @@ namespace ObjectTracking
 		int getYPos();
 		void setYPos(int y);
 
+		int area() const { return area_; }
+		void setArea(int val) { area_ = val; }
+
 		Scalar getHSVmin();
 		Scalar getHSVmax();
 
@@ -40,7 +43,9 @@ namespace ObjectTracking
 
 	private:
 
-		int xPos, yPos;
+		int xPos;
+		int yPos;
+		int area_;
 		string type;
 		Scalar HSVmin, HSVmax;
 		Scalar Color;
