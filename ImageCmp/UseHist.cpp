@@ -1,28 +1,20 @@
 #include "stdafx.h"
+#include "Core.h"
 #include "UseHist.h"
 #include "ResultAnalyse.h"
 #include <iostream>
 #include <string>
+#include <future>
+#include <algorithm>
+#include <functional>
 #include <opencv2\highgui.hpp>
 #include <opencv2\imgproc.hpp>
 
 using namespace cv;
 
-static const char* g_filenames[] =
-{
-	R"(.\img\larger1.jpg)",
-	R"(.\img\larger2.jpg)",
-	R"(.\img\larger3.jpg)",
-	R"(.\img\larger4.jpg)",
-	R"(.\img\larger5.png)",
-	R"(.\img\larger6.jpg)",
-	R"(.\img\graf1.png)",
-	R"(.\img\graf3.png)"
-};
-
 void UseHist::run()
 {
-	constexpr int count = sizeof(g_filenames) / sizeof(g_filenames[0]);
+	const size_t count = g_filenames.size();
 	std::vector<Mat> histograms(count);
 	for (int i = 0; i < count; ++i)
 	{
@@ -41,23 +33,37 @@ void UseHist::run()
 
 std::vector<AlgDev::Result> UseHist::runResult()
 {
-	constexpr int count = sizeof(g_filenames) / sizeof(g_filenames[0]);
-	std::vector<AlgDev::Result> result;
-	result.reserve((count + 1) * count / 2);
-	std::vector<Mat> histograms(count);
+	using Result = AlgDev::Result;
+	using namespace std;
+
+	const size_t count = std::size(g_filenames);
+	vector<shared_future<Mat>> histograms;
+	histograms.reserve(count);
+	auto make_hist = [this](int i) { Mat hist; _createHist(i, hist); return hist; };
 	for (int i = 0; i < count; ++i)
 	{
-		_createHist(i, histograms[i]);
+		histograms.push_back(async(make_hist, i));
 	}
 
+	vector<future<Result>> rfuts;
+	rfuts.reserve(count * (count + 1) / 2);
+	auto cmp_hist = [this, &histograms](int i, int j)
+	{ return Result(pair<int, int>(i, j), compareHist(histograms[i].get(), histograms[j].get(), compare_method_)); };
 	for (int i = 0; i < count; ++i)
 	{
 		for (int j = i; j < count; ++j)
 		{
-			const double cmprd = compareHist(histograms[i], histograms[j], compare_method_);
-			result.push_back(AlgDev::Result(std::pair<int, int>(i, j), cmprd));
+			rfuts.push_back(async(cmp_hist, i, j));
 		}
 	}
+	//vector<Result> result;
+	//result.reserve(count * (count + 1) / 2);
+	//for (auto& fut : rfuts)
+	//{
+	//	result.push_back(fut.get());
+	//}
+	vector<Result> result(count * (count + 1) / 2);
+	transform(begin(rfuts), end(rfuts), begin(result), mem_fun_ref_t<Result, future<Result>>(&future<Result>::get));
 	return result;
 }
 
@@ -116,15 +122,20 @@ void UseHist::_createHist(int img_index, Mat& hist) const
 void UseHist::testMethod()
 {
 	std::wcout << std::endl << L"CV_COMP_CORREL" << std::endl;
-	AlgDev::Analyse(UseHist(CV_COMP_CORREL).runResult());
+	AlgDev::Analyse(UseHist(CV_COMP_CORREL).runResult(), std::greater<AlgDev::Result>());
+
 	std::wcout << std::endl << L"CV_COMP_CHISQR" << std::endl;
-	AlgDev::Analyse(UseHist(CV_COMP_CHISQR).runResult());
+	AlgDev::Analyse(UseHist(CV_COMP_CHISQR).runResult(), std::less<AlgDev::Result>());
+	
 	std::wcout << std::endl << L"CV_COMP_INTERSECT" << std::endl;
-	AlgDev::Analyse(UseHist(CV_COMP_INTERSECT).runResult());
+	AlgDev::Analyse(UseHist(CV_COMP_INTERSECT).runResult(), std::greater<AlgDev::Result>());
+	
 	std::wcout << std::endl << L"CV_COMP_BHATTACHARYYA = CV_COMP_HELLINGER" << std::endl;
-	AlgDev::Analyse(UseHist(CV_COMP_BHATTACHARYYA).runResult());
+	AlgDev::Analyse(UseHist(CV_COMP_BHATTACHARYYA).runResult(), std::less<AlgDev::Result>());
+	
 	std::wcout << std::endl << L"CV_COMP_CHISQR_ALT" << std::endl;
-	AlgDev::Analyse(UseHist(CV_COMP_CHISQR_ALT).runResult());
+	AlgDev::Analyse(UseHist(CV_COMP_CHISQR_ALT).runResult(), std::less<AlgDev::Result>());
+	
 	std::wcout << std::endl << L"CV_COMP_KL_DIV" << std::endl;
-	AlgDev::Analyse(UseHist(CV_COMP_KL_DIV).runResult());
+	AlgDev::Analyse(UseHist(CV_COMP_KL_DIV).runResult(), std::less<AlgDev::Result>());
 }

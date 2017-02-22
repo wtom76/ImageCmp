@@ -354,17 +354,14 @@ namespace ObjectTracking
 	{
 		//Matrix to store each frame of the webcam feed
 		Mat cameraFeed = imread(R"(.\img\larger1.jpg)", IMREAD_UNCHANGED);
-		Mat threshold;
-		Mat HSV;
-
-		src = cameraFeed;
-
-		if (!src.data)
+		if (!cameraFeed.data)
 		{
 			std::cout << "Image isn't loaded" << std::endl;
 			return;
 		}
 
+		Mat threshold;
+		Mat HSV;
 		//convert frame from BGR to HSV colorspace
 		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 
@@ -373,22 +370,18 @@ namespace ObjectTracking
 		Object blue("blue"), yellow("yellow"), red("red"), green("green");
 
 		//first find blue objects
-		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 		inRange(HSV, blue.getHSVmin(), blue.getHSVmax(), threshold);
 		morphOps(threshold);
 		trackFilteredObject(blue, threshold, HSV, cameraFeed);
 		//then yellows
-		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 		inRange(HSV, yellow.getHSVmin(), yellow.getHSVmax(), threshold);
 		morphOps(threshold);
 		trackFilteredObject(yellow, threshold, HSV, cameraFeed);
 		//then reds
-		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 		inRange(HSV, red.getHSVmin(), red.getHSVmax(), threshold);
 		morphOps(threshold);
 		trackFilteredObject(red, threshold, HSV, cameraFeed);
 		//then greens
-		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 		inRange(HSV, green.getHSVmin(), green.getHSVmax(), threshold);
 		morphOps(threshold);
 		trackFilteredObject(green, threshold, HSV, cameraFeed);

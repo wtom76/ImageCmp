@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Core.h"
 #include "UseOrb.h"
 #include <opencv2/stitching/detail/matchers.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -8,16 +9,6 @@
 #include <algorithm>
 
 using namespace cv;
-
-static const char* g_filenames[] =
-{
-	R"(.\img\larger1.jpg)",
-	R"(.\img\larger2.jpg)",
-	R"(.\img\larger3.jpg)",
-	R"(.\img\larger4.jpg)",
-	R"(.\img\larger5.png)",
-	R"(.\img\larger6.jpg)"
-};
 
 static constexpr int count = 6;
 

@@ -42,6 +42,12 @@
     <ClInclude Include="ResultAnalyse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UseResize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -69,6 +75,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UseHist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UseResize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

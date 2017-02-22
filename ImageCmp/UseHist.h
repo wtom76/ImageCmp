@@ -13,6 +13,6 @@ public:
 
 	void run();
 	std::vector<AlgDev::Result> runResult();
-	void testMethod();
+	static void testMethod();
 };
 

@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Core.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ResultAnalyse.h" />
     <ClInclude Include="stdafx.h" />
@@ -156,9 +157,11 @@
     <ClInclude Include="UseHist.h" />
     <ClInclude Include="UseMoments.h" />
     <ClInclude Include="UseOrb.h" />
+    <ClInclude Include="UseResize.h" />
     <ClInclude Include="UzeAkaze.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core.cpp" />
     <ClCompile Include="ImageCmp.cpp" />
     <ClCompile Include="multipleObjectTracking.cpp" />
     <ClCompile Include="Object.cpp" />
@@ -172,6 +175,7 @@
     <ClCompile Include="UseHist.cpp" />
     <ClCompile Include="UseMoments.cpp" />
     <ClCompile Include="UseOrb.cpp" />
+    <ClCompile Include="UseResize.cpp" />
     <ClCompile Include="UzeAkaze.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

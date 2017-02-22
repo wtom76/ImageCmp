@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Core.h"
 #include "UseMoments.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -8,16 +9,6 @@
 
 using namespace cv;
 using namespace std;
-
-static const char* g_filenames[] =
-{
-	R"(.\img\larger1.jpg)",
-	R"(.\img\larger2.jpg)",
-	R"(.\img\larger3.jpg)",
-	R"(.\img\larger4.jpg)",
-	R"(.\img\larger5.png)",
-	R"(.\img\larger6.jpg)"
-};
 
 UseMoments::UseMoments()
 {

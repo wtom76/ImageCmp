@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Core.h"
 #include "UseFast.h"
 #include <iostream>
 #include <opencv2/features2d.hpp>
@@ -7,17 +8,6 @@
 
 using namespace cv;
 
-static const char* g_filenames[] =
-{
-	R"(.\img\larger1.jpg)",
-	R"(.\img\larger2.jpg)",
-	R"(.\img\larger3.jpg)",
-	R"(.\img\larger4.jpg)",
-	R"(.\img\larger5.png)",
-	R"(.\img\larger6.jpg)"
-};
-
-static constexpr int count = sizeof(g_filenames) / sizeof(g_filenames[0]);
 static constexpr int threshold = 65;
 
 int image_index = 1;
@@ -32,6 +22,7 @@ UseFast::~UseFast()
 
 void UseFast::_run(int image_index)
 {
+	const int count = g_filenames.size();
 	std::vector<Mat> images(count);
 	images[image_index] = imread(g_filenames[image_index], IMREAD_GRAYSCALE);
 	if (images[image_index].empty())
@@ -58,6 +49,7 @@ void UseFast::_run(int image_index)
 
 void UseFast::_runGftt(int image_index)
 {
+	const int count = g_filenames.size();
 	std::vector<Mat> images(count);
 	images[image_index] = imread(g_filenames[image_index], IMREAD_GRAYSCALE);
 	if (images[image_index].empty())
@@ -85,6 +77,7 @@ void UseFast::_runGftt(int image_index)
 
 void UseFast::run()
 {
+	const int count = g_filenames.size();
 	for (int i = 0; i < count; ++i)
 	{
 		_runGftt(i);

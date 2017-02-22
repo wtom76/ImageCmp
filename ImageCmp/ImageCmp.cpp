@@ -19,16 +19,21 @@
 #include "Object.h"
 #include "UseMoments.h"
 #include "UseHist.h"
+#include "UseResize.h"
 
 int main()
 {
 	try
 	{
-		ObjectTracking::runImage();
+		UseResize::testMethod();
 	}
 	catch (cv::Exception& ex)
 	{
 		std::cout << ex.err << std::endl;
+	}
+	catch (std::exception& ex)
+	{
+		std::cout << ex.what() << std::endl;
 	}
 }
 

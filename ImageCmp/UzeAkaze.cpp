@@ -22,8 +22,8 @@ UzeAkaze::~UzeAkaze()
 
 void UzeAkaze::run()
 {
-	Mat img1 = imread(R"(.\img\larger1.jpg)", IMREAD_GRAYSCALE);
-	Mat img2 = imread(R"(.\img\larger2.jpg)", IMREAD_GRAYSCALE);
+	Mat img1 = imread(R"(.\img\00.jpg)", IMREAD_GRAYSCALE);
+	Mat img2 = imread(R"(.\img\01.jpg)", IMREAD_GRAYSCALE);
 
 	Mat homography;
 	FileStorage fs(R"(.\img\H1to3p.xml)", FileStorage::READ);
