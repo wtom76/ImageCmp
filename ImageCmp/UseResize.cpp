@@ -13,8 +13,8 @@
 using namespace cv;
 using namespace std;
 
-UseResize::UseResize()
-	: size_(3)
+UseResize::UseResize(int size)
+	: size_(size)
 	, diff_kernel_(_createKernel())
 	, max_diff_(_maxDiff())
 {
@@ -148,7 +148,17 @@ std::vector<AlgDev::Result> UseResize::run()
 	return result;
 }
 
+void UseResize::testMethod(int size, double thresh)
+{
+	cout << endl << "size = " << size << ", thresh = " << thresh << endl;
+	AlgDev::Analyse(UseResize(size).run(), std::less<AlgDev::Result>(), thresh);
+}
+
 void UseResize::testMethod()
 {
-	AlgDev::Analyse(UseResize().run(), std::less<AlgDev::Result>());
+	testMethod(3, 0.25);
+	testMethod(3, 0.30);
+	testMethod(4, 0.25);
+	testMethod(5, 0.28);
+	testMethod(6, 0.27);
 }

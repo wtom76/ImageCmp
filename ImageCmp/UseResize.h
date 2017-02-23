@@ -17,10 +17,11 @@ class UseResize
 	T _hueDiff(T hue1, T hue2) const;
 	double _compare(const cv::Mat& left, const cv::Mat& right) const;
 public:
-	UseResize();
+	UseResize(int size);
 	~UseResize();
 
 	std::vector<AlgDev::Result> run();
+	static void testMethod(int size, double thresh);
 	static void testMethod();
 };
 
