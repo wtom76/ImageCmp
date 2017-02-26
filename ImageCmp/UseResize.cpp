@@ -129,7 +129,7 @@ std::vector<AlgDev::Result> UseResize::run()
 	auto make_hist = [this](int i) { return _makeHueFPrint(i); };
 	for (int i = 0; i < count; ++i)
 	{
-		icons.push_back(async(launch::deferred, make_hist, i));
+		icons.push_back(async(make_hist, i));
 	}
 
 	vector<future<Result>> rfuts;
@@ -140,7 +140,7 @@ std::vector<AlgDev::Result> UseResize::run()
 	{
 		for (int j = i; j < count; ++j)
 		{
-			rfuts.push_back(async(launch::deferred, cmp_hist, i, j));
+			rfuts.push_back(async(cmp_hist, i, j));
 		}
 	}
 	vector<Result> result(count * (count + 1) / 2);
